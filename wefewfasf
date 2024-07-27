@@ -1,0 +1,109 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local Executor = Instance.new("ScreenGui")
+local Main = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local ScriptBox = Instance.new("TextBox")
+local Clear = Instance.new("TextButton")
+local Execute = Instance.new("TextButton")
+
+-- Properties:
+
+Executor.Name = "Executor"
+Executor.Parent = game.CoreGui -- Changed to CoreGui to prevent disappearing on death
+Executor.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Main.Name = "Main"
+Main.Parent = Executor
+Main.BackgroundColor3 = Color3.fromRGB(44, 44, 44)
+Main.BorderSizePixel = 0
+Main.Position = UDim2.new(0.276393831, 0, 0.259036154, 0)
+Main.Size = UDim2.new(0, 389, 0, 240)
+Main.Draggable = true
+Main.Active = true
+
+Title.Name = "Title"
+Title.Parent = Main
+Title.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+Title.BorderSizePixel = 0
+Title.Size = UDim2.new(0, 389, 0, 34)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "Pulse"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14.000
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+ScriptBox.Name = "ScriptBox"
+ScriptBox.Parent = Main
+ScriptBox.BackgroundColor3 = Color3.fromRGB(99, 99, 99)
+ScriptBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScriptBox.BorderSizePixel = 2
+ScriptBox.Position = UDim2.new(0.0520094857, 0, 0.191666663, 0)
+ScriptBox.Size = UDim2.new(0, 349, 0, 155)
+ScriptBox.Font = Enum.Font.SourceSansBold
+ScriptBox.Text = "--- Insert script here"
+ScriptBox.TextColor3 = Color3.fromRGB(0, 170, 0)
+ScriptBox.TextSize = 14.000
+ScriptBox.TextXAlignment = Enum.TextXAlignment.Left
+ScriptBox.TextYAlignment = Enum.TextYAlignment.Top
+ScriptBox.ClearTextOnFocus = false
+
+Clear.Name = "Clear"
+Clear.Parent = Main
+Clear.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+Clear.BorderColor3 = Color3.fromRGB(255, 255, 255)
+Clear.BorderSizePixel = 2
+Clear.Position = UDim2.new(0.290488422, 0, 0.875, 0)
+Clear.Size = UDim2.new(0, 80, 0, 22)
+Clear.Font = Enum.Font.SourceSansBold
+Clear.Text = "Clear"
+Clear.TextColor3 = Color3.fromRGB(255, 255, 255)
+Clear.TextSize = 14.000
+
+Execute.Name = "Execute"
+Execute.Parent = Main
+Execute.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+Execute.BorderColor3 = Color3.fromRGB(255, 255, 255)
+Execute.BorderSizePixel = 2
+Execute.Position = UDim2.new(0.0514138825, 0, 0.875, 0)
+Execute.Size = UDim2.new(0, 80, 0, 22)
+Execute.Font = Enum.Font.SourceSansBold
+Execute.Text = "Execute"
+Execute.TextColor3 = Color3.fromRGB(255, 255, 255)
+Execute.TextSize = 14.000
+
+-- Functions:
+
+local function onExecuteClicked()
+    local code = ScriptBox.Text
+    local func, err = loadstring(code)
+    if func then
+        local success, runErr = pcall(func)
+        if not success then
+            warn("Error running code: " .. runErr)
+        end
+    else
+        warn("Error compiling code: " .. err)
+    end
+end
+
+local function onClearClicked()
+    ScriptBox.Text = ""
+end
+
+Execute.MouseButton1Click:Connect(onExecuteClicked)
+Clear.MouseButton1Click:Connect(onClearClicked)
+
+-- Toggle Visibility Function:
+local function toggleUI(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.Q and input.UserInputType == Enum.UserInputType.Keyboard then
+        if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftShift) or game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.RightShift) then
+            Main.Visible = not Main.Visible
+        end
+    end
+end
+
+game:GetService("UserInputService").InputBegan:Connect(toggleUI)
